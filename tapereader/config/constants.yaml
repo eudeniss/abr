@@ -1,0 +1,26 @@
+# Constantes numéricas do sistema
+constants:
+  # Valores financeiros
+  financial:
+    dol_point_value: 10.0
+    wdo_point_value: 10.0
+    dol_tick_value: 50.0
+    wdo_tick_value: 5.0
+    
+  # Normalização de volume  
+  volume_normalization:
+    WDOFUT: 0.2  # 1/5 da equivalência
+    DOLFUT: 1.0
+    
+  # Constantes de UI
+  ui:
+    default_alert_buffer: 5
+    percentile_conversion_factor: 33.3
+    max_display_behaviors: 3
+    
+  # Constantes de som (Windows)
+  sound:
+    beep_duration_base: 300
+    beep_count_critical: 3
+    beep_count_warning: 2
+    beep_count_success: 1

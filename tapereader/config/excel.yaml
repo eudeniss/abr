@@ -1,0 +1,62 @@
+# -----------------------------------------------------------------
+# Arquivo de Configuração Final do Excel v5.0
+# -----------------------------------------------------------------
+excel:
+  # Nome do arquivo Excel. O script espera que este arquivo esteja aberto.
+  workbook_name: rtd_tapeReading.xlsx
+  
+  # Nome da aba (planilha) onde os dados estão.
+  sheet_name: Sheet1
+  
+  # Intervalo de atualização para o monitor (em segundos).
+  # Valores menores (ex: 0.1) são mais rápidos mas usam mais CPU.
+  update_interval: 0.05
+
+  # Configurações de exibição para o monitor.py
+  display:
+    trades_rows: 30 # Número de linhas no Times & Trades
+    book_rows: 10   # Número de linhas no Livro de Ofertas
+
+  # Mapeamento dos intervalos (ranges) de dados na planilha.
+  ranges:
+    # Times & Trades para WDOFUT
+    wdofut_trades:
+      start_col: "B"
+      end_col: "E"
+      start_row: 4
+      max_rows: 100                 # Para a carga inicial
+      subsequent_read_rows: 15    # Para as atualizações rápidas
+
+    # Times & Trades para DOLFUT
+    dolfut_trades:
+      start_col: "H"
+      end_col: "K"
+      start_row: 4
+      max_rows: 100                 # Para a carga inicial
+      subsequent_read_rows: 15    # Para as atualizações rápidas
+      
+    # Livro de Ofertas para WDOFUT
+    wdofut_book:
+      start_row: 4
+      max_rows: 10
+      hora_compra: "N"
+      id_ordem_compra: "O"
+      qtde_compra: "P"
+      compra: "Q"
+      venda: "R"
+      qtde_venda: "S"
+      id_ordem_venda: "T"
+      hora_venda: "U"
+      
+    # Livro de Ofertas para DOLFUT
+    dolfut_book:
+      start_row: 4
+      max_rows: 10
+      hora_compra: "X"
+      id_ordem_compra: "Y"
+      qtde_compra: "Z"
+      compra: "AA"
+      venda: "AB"
+      qtde_venda: "AC"
+      id_ordem_venda: "AD"
+      hora_venda: "AE"

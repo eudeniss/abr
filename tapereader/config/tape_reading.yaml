@@ -1,0 +1,39 @@
+tape_reading:
+  trade_window: 50
+  min_pressure_ratio: 1.5
+  min_trades_for_signal: 20
+  signal_cooldown_sec: 60
+  
+  risk_management:
+    risk_percent: 0.15
+    target_percent: 0.25
+    
+  confidence_logic:
+    base_confidence: 60
+    high_ratio_threshold: 2.5
+    high_confidence_level: 85
+    medium_ratio_threshold: 2.0
+    medium_confidence_level: 75
+    low_ratio_threshold: 1.5
+    low_confidence_level: 65
+    weighted_pressure_bonus: 5
+    weighted_pressure_threshold: 0.7
+    
+  time_context:
+    enabled: true
+    opening_period: 
+      period: 'ABERTURA'
+      start: "09:00"
+      end: "09:30"
+      multiplier: 1.3
+      confidence_adj: -5
+    closing_period:
+      period: 'FECHAMENTO'
+      start: "16:30"
+      end: "17:00"
+      multiplier: 1.2
+      confidence_adj: -5
+    normal_period:
+      period: 'NORMAL'
+      multiplier: 1.0
+      confidence_adj: 0

@@ -1,0 +1,462 @@
+# ===================================================================
+# CONFIGURAÇÃO COMPLETA DE ARBITRAGEM E TAPE READING v5.2
+# ===================================================================
+# Este arquivo centraliza todos os parâmetros do sistema.
+
+# ============================================
+# SEÇÃO 1: ARBITRAGEM (BÁSICO)
+# ============================================
+arbitrage:
+  # Parâmetros dos contratos
+  contracts:
+    wdo:
+      multiplier: 10000     # US$ 10k por contrato
+      tick_size: 0.5        # Tamanho mínimo de variação
+      tick_value: 5.0       # R$ por ponto
+      symbol: "WDOFUT"
+    dol:
+      multiplier: 50000     # US$ 50k por contrato
+      tick_size: 0.01       # Tamanho mínimo de variação
+      tick_value: 50.0      # R$ por ponto
+      symbol: "DOLFUT"
+      point_value: 10.0     # R$ por ponto do dólar
+  
+  # Equivalência entre contratos
+  equivalence:
+    ratio: 5               # 5 WDO = 1 DOL
+    
+  # Custos operacionais B3
+  costs:
+    emolumentos_per_contract: 0.27
+    corretagem_per_contract: 0.50
+    
+  # Parâmetros de detecção de oportunidade
+  detection:
+    min_profit_reais: 20.0
+    transaction_cost_reais: 2.0
+    slippage: 0.5
+    
+  # Alertas e limites estatísticos
+  alerts:
+    spread_std_devs: 1.5         # IMPORTANTE: Threshold principal (quantos desvios padrão)
+    max_spread: 3.0              # Spread máximo para considerar o mercado normal
+    
+  # Configurações de análise estatística  
+  statistics:
+    min_samples_for_signal: 20
+    history_size: 100            # Histórico de spreads para cálculo de média/desvio
+    opportunities_size: 50       # Histórico de oportunidades para análise
+    leader_analysis_history_size: 50 # Histórico para análise de liderança de ativo
+    
+  # Filtros de qualidade de sinal
+  filters:
+    min_book_depth: 100          # Volume mínimo no book para validar liquidez
+    max_spread_wdo: 1.0          # Spread máximo permitido no book do WDO
+    max_spread_dol: 0.05         # Spread máximo permitido no book do DOL
+    
+  # Modo de operação do robô
+  operation:
+    main_loop_sleep: 0.5         # Intervalo do loop principal em segundos
+    auto_execute: false
+    alert_only: true
+    sound_alerts: true
+    
+  # Horários de operação
+  schedule:
+    start_time: "09:00"
+    end_time: "17:00"
+    avoid_open: 15               # Minutos para evitar após a abertura
+    avoid_close: 15              # Minutos para evitar antes do fechamento
+    
+  # ===== PERFIS DE TRADING =====
+  trading_profiles:
+    # Perfil padrão (produção)
+    default:
+      spread_std_devs: 1.5
+      min_samples_for_signal: 20
+      min_profit_reais: 20.0
+      history_size: 100
+      
+    # Perfil para spreads pequenos (teste/desenvolvimento)
+    small_spreads:
+      spread_std_devs: 0.8        # Threshold mais baixo
+      min_samples_for_signal: 10  # AJUSTADO: Aumentado para 10 amostras
+      min_profit_reais: 10.0      # AJUSTADO: Lucro mínimo mais realista
+      history_size: 50            # ADICIONADO: Histórico menor
+      
+    # Perfil conservador
+    conservative:
+      spread_std_devs: 2.0
+      min_samples_for_signal: 30
+      min_profit_reais: 30.0
+      history_size: 150
+      
+    # Perfil agressivo
+    aggressive:
+      spread_std_devs: 1.0
+      min_samples_for_signal: 15
+      min_profit_reais: 10.0
+      history_size: 75
+  
+  # Perfil ativo (mude aqui para trocar de perfil)
+  active_profile: "small_spreads"  # Opções: default, small_spreads, conservative, aggressive
+
+# ============================================
+# SEÇÃO 2: ARBITRAGEM (AVANÇADO)
+# ============================================
+arbitrage_enhanced:
+  # Validação e Níveis de Confiança
+  validation:
+    min_profit_points: 2.0
+    min_risk_reward: 1.0
+    max_risk_points: 10.0
+    # CORREÇÃO CRÍTICA: Ajustado para ser compatível com small_spreads
+    threshold_low: 0.8           # MUDADO de 1.2 para 0.8
+    threshold_medium: 1.5        # Z-score para confiança média
+    threshold_high: 2.0          # Z-score para confiança alta
+    threshold_extreme: 2.5       # ADICIONADO: Z-score para confiança extrema
+    # ADICIONADOS: Parâmetros necessários para o validador
+    min_std_dev: 0.05           # Desvio padrão mínimo
+    max_spread_abs: 5.0         # Spread absoluto máximo
+    min_profit_reais: 10.0      # Lucro mínimo em reais
+    # ADICIONADOS: Contratos por nível
+    contracts_low: 1
+    contracts_medium: 2
+    contracts_high: 3
+    contracts_extreme: 5
+    point_value: 10.0           # Valor do ponto para cálculos
+    # Parâmetros híbridos
+    use_momentum: true
+    momentum_factor: 0.1
+    guarantee_min_points: true
+    guaranteed_points_value: 3.0
+    guarantee_z_score_threshold: 2.5
+    
+  # Monitor de Posição Única
+  position_monitor:
+    max_time_minutes: 5
+    adverse_threshold: 0.5       # Pontos de movimento adverso para alerta
+    favorable_threshold: 0.3
+    spread_invalidation: 0.5     # Z-score que invalida a premissa da operação
+    no_progress_time: 120        # Segundos sem progresso para alerta
+    point_value: 10.0           # Valor do ponto para cálculo de P&L
+    tape_reading_adverse_threshold: 3.0  # Threshold maior para tape reading
+
+  # Análise de Liderança de Ativo
+  leadership_analysis:
+    enabled: true
+    lookback_period: 5           # Ticks para analisar qual ativo se moveu mais
+    imbalance_ratio: 1.2         # Ratio para considerar liderança
+
+  # Integração com Módulo de Comportamentos
+  behavior_integration:
+    min_strength_for_confirmation: 50
+    confidence_bonus_per_confirmation: 5
+    
+  # Parâmetros Dinâmicos (Ajuste Automático)
+  dynamic_parameters:
+    enabled: true
+    adjustment_interval_sec: 300
+    gradual_adjustment_weight: 0.3
+    # Tamanhos de janela
+    window_sizes:
+      volatility: 200
+      volume: 100
+      signal_success: 50
+    # Mínimos de amostras
+    min_samples_for_analysis:
+      adjustment: 50
+      regime_detection: 100
+    # Períodos de lookback
+    lookback_periods:
+      recent_volatility: 30
+    # CORREÇÃO: Formato adequado para time_based_multipliers
+    time_based_multipliers:
+      morning_open:
+        start: "09:00"
+        end: "10:30"
+        multiplier: 1.2
+      lunch:
+        start: "12:00"
+        end: "13:30"
+        multiplier: 1.1
+      closing:
+        start: "16:30"
+        end: "17:30"
+        multiplier: 1.3
+      normal:
+        multiplier: 1.0
+    regime_detection_thresholds:
+      high_vol_ratio: 1.5
+      low_vol_ratio: 0.7
+      trending_min_avg_volume: 1000
+      trending_min_success_rate: 0.7
+    regime_adjustments:
+      high_volatility:
+        STD_THRESHOLD: 1.3
+        MIN_PROFIT_REAIS: 1.5
+        SLIPPAGE: 1.5
+      low_volatility:
+        STD_THRESHOLD: 0.8
+        MIN_PROFIT_REAIS: 0.7
+        SLIPPAGE: 0.8
+      trending:
+        STD_THRESHOLD: 0.9
+        MIN_PROFIT_REAIS: 0.8
+  
+  # Sistema de Logging
+  logging:
+    signal_logger:
+      log_dir: "logs/arbitrage"
+      buffer_size: 10
+      formats: ["jsonl", "csv"]
+    history_manager:
+      max_signals: 10           # AJUSTADO: Aumentado de 5 para 10
+      
+  # Configurações do Display (UI)
+  display:
+    update_interval: 1.0
+    z_score_to_percentile_factor: 33.3
+    z_score_colors:
+      high_z: 2.0
+      medium_z: 1.5
+      low_z: 1.0
+    tape_pressure_threshold_pct: 60
+    confidence_levels:
+      high: 85
+      medium: 70
+    position_sizing_labels:
+      high_confidence: "MÃO CHEIA"
+      medium_confidence: "MÃO CHEIA"
+      low_confidence: "MEIA MÃO"
+    behavior_filtering:
+      min_strength_for_display: 60
+      ignore_momentum_strength_below: 70
+    session_stats_colors:
+      high_win_rate: 60
+      medium_win_rate: 40
+    ui_alert_buffer_size: 5
+    debug_row_count: 5
+      
+  # Gestão de Posição (Tamanho)
+  position_sizing:
+    # CORREÇÃO: Valores mais conservadores
+    low_confidence: 
+      contracts: 1              # MUDADO de 5 para 1
+      label: "MEIA MÃO"
+    medium_confidence: 
+      contracts: 2              # MUDADO de 10 para 2
+      label: "MÃO CHEIA"
+    high_confidence: 
+      contracts: 3              # MUDADO de 10 para 3
+      label: "MÃO CHEIA"
+      premium_alert: true
+      
+  # Alertas e Sons
+  alerts:
+    sound_enabled: true
+    sound_frequencies:
+      normal_signal: 1500
+      premium_signal: 2000
+      alert_success: 1000
+      alert_warning: 1500
+      alert_critical: 2000
+    sound_duration_ms: 300
+    
+  # Análise de Fluxo
+  flow_analysis:
+    trade_window_size: 200
+    absorption_threshold: 1000
+    divergence_threshold: 0.6
+    absorption_price_variation_threshold: 0.001
+    dominant_side_threshold: 0.3
+    flow_strength_thresholds:
+      strong: 0.7
+      moderate: 0.4
+      
+  # Análise de Liquidez
+  liquidity_analysis:
+    min_liquidity_score: 0.6
+    max_levels_analysis: 5
+    iceberg_ratio: 3.0
+    max_acceptable_levels: 3
+    max_acceptable_slippage_pct: 0.002
+    max_acceptable_spread_pct: 0.001
+    max_book_imbalance: 0.5
+    iceberg_bonus_multiplier: 1.1
+    iceberg_volume_variance_threshold: 0.2
+    execution_risk_thresholds:
+      low_liquidity_score: 0.5
+      medium_liquidity_score: 0.8
+    
+  # Debug
+  debug:
+    log_level: "INFO"
+    show_spread_analysis: true
+
+# ============================================
+# SEÇÃO 3: TAPE READING
+# ============================================
+tape_reading:
+  enabled: true                  # ADICIONADO: Habilitado por padrão
+  trade_window: 50
+  min_pressure_ratio: 1.5
+  min_trades_for_signal: 20
+  signal_cooldown_sec: 60
+  risk_management:
+    risk_percent: 0.15
+    target_percent: 0.25
+  confidence_logic:
+    base_confidence: 60
+    high_ratio_threshold: 2.5
+    high_confidence_level: 85
+    medium_ratio_threshold: 2.0
+    medium_confidence_level: 75
+    low_ratio_threshold: 1.5
+    low_confidence_level: 65
+    weighted_pressure_bonus: 5
+    weighted_pressure_threshold: 0.7
+  time_context:
+    enabled: true
+    # CORREÇÃO: Formato adequado
+    opening_period:
+      period: 'ABERTURA'
+      start: "09:00"
+      end: "09:30"
+      multiplier: 1.3
+      confidence_adj: -5
+    closing_period:
+      period: 'FECHAMENTO'
+      start: "16:30"
+      end: "17:00"
+      multiplier: 1.2
+      confidence_adj: -5
+    normal_period:
+      period: 'NORMAL'
+      multiplier: 1.0
+      confidence_adj: 0
+
+# ============================================
+# SEÇÃO 4: MONITOR.PY (Utilitário)
+# ============================================
+monitor_display:
+  update_interval: 0.5
+  trade_buffer_size: 30
+  flow_bias_threshold_percent: 20
+  volatility_high_threshold_pct: 0.5
+  volatility_medium_threshold_pct: 0.2
+  book_pressure_buy_threshold: 0.65
+  book_pressure_sell_threshold: 0.35
+  book_pressure_levels: 3
+  recent_trades_display_count: 8
+  divergence_alert_threshold_points: 2.0
+
+# ============================================
+# SEÇÃO 5: COMPORTAMENTOS (BEHAVIORS)
+# ============================================
+# ADICIONADA: Seção completa de behaviors
+behaviors:
+  # Comportamentos habilitados
+  enabled_behaviors:
+    - "iceberg_detection"
+    - "stop_hunting"
+    - "absorption"
+    - "momentum_ignition"
+    - "sweep"
+    - "price_defense"
+    
+  # Configurações gerais
+  general:
+    min_trades_for_analysis: 5
+    time_window_seconds: 60
+    
+  # Detecção de Iceberg
+  iceberg_detection:
+    min_volume_threshold: 100
+    price_tolerance: 0.02
+    min_occurrences: 3
+    
+  # Stop Hunting
+  stop_hunting:
+    min_volume_spike: 2.0        # 2x volume médio
+    price_movement_percent: 0.1
+    reversal_time_window: 30
+    
+  # Absorção
+  absorption:
+    min_volume_absorbed: 500
+    max_price_change_percent: 0.02
+    time_window: 60
+    
+  # Ignição de Momentum
+  momentum_ignition:
+    min_consecutive_trades: 5
+    same_direction_percent: 80
+    min_total_volume: 200
+    
+  # Sweep
+  sweep:
+    min_levels_swept: 2
+    time_window: 10
+    min_volume: 300
+    
+  # Defesa de Preço
+  price_defense:
+    min_volume_at_level: 200
+    price_tolerance: 0.01
+    time_persistence: 30
+
+# ============================================
+# SEÇÃO 6: CONFIGURAÇÃO DO EXCEL PROVIDER
+# ============================================
+# ADICIONADA: Configuração do Excel
+excel:
+  file_path: "data/market_data.xlsx"
+  worksheet_name: "Data"
+  update_interval: 0.1
+  max_retries: 3
+  retry_delay: 1.0
+  buffer_size: 1000
+  
+# ============================================
+# SEÇÃO 7: ANÁLISE DE VOLUME
+# ============================================
+# ADICIONADA: Normalização de volume
+volume_normalizer:
+  # Normalização de volume
+  normalization_enabled: true
+  default_lot_size: 1
+  
+  # Mapeamento de tamanhos de lote
+  lot_sizes:
+    WDOFUT: 5
+    DOLFUT: 1
+    
+  # Agregação de volume
+  aggregation_window: 60        # segundos
+  min_trades_for_aggregation: 10
+
+# ============================================
+# SEÇÃO 8: CACHE
+# ============================================
+# ADICIONADA: Configuração de cache
+cache:
+  enabled: true
+  ttl_seconds: 60
+  max_size: 1000
+  
+# ============================================
+# SEÇÃO 9: LOGGER
+# ============================================
+# ADICIONADA: Configuração de logging
+logger:
+  level: "INFO"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file_handler:
+    enabled: true
+    filename: "logs/arbitrage.log"
+    max_bytes: 10485760  # 10MB
+    backup_count: 5
+  console_handler:
+    enabled: true
+    colored: true

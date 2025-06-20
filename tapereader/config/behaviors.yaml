@@ -1,0 +1,48 @@
+behaviors:
+  absorption:
+    enabled: true
+    volume_threshold_ratio: 3.0
+    price_impact_max_ticks: 2
+    min_trades_for_detection: 15
+    price_variation_threshold_pct: 0.001  # 0.1%
+    
+  exhaustion:
+    enabled: true
+    trend_lookback: 20
+    trend_detection:
+      fast_ma_period: 5
+      slow_ma_period: 15
+      buy_threshold_multiplier: 1.0005
+      sell_threshold_multiplier: 0.9995
+    momentum_analysis:
+      lookback_period: 10
+      retracement_threshold: 0.236
+      high_retracement_threshold: 0.618
+      
+  institutional:
+    enabled: true
+    institutional_size: 500
+    dominance_ratio: 1.5
+    strength_multiplier: 20
+    
+  price_defense:
+    enabled: true
+    track_levels: 3
+    time_window_seconds: 30
+    min_renovations: 3
+    significant_size_dol: 100
+    significant_size_wdo: 400
+    classification_rules:
+      aggressive_renovations: 5
+      aggressive_persistence_sec: 20
+      active_renovations: 3
+      active_persistence_sec: 30
+      passive_persistence_sec: 20
+    strength_calculation:
+      renovation_weight: 40
+      persistence_weight: 30
+      volume_weight: 30
+      renovation_divisor_factor: 2.0
+      volume_divisor_factor: 2.0
+    renovation_detection:
+      quick_replacement_time_sec: 5

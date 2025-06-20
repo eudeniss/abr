@@ -1,0 +1,23 @@
+# Core
+xlwings>=0.30.0
+pydantic>=2.0.0
+pyyaml>=6.0.0
+numpy>=1.26.0
+
+# Console & Logging
+rich>=13.0.0
+orjson>=3.9.0
+python-json-logger>=2.0.0
+
+# Database
+aiosqlite>=0.19.0
+
+# Development & Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+pytest-mock>=3.11.0
+
+# Optional
+watchdog>=4.0.0
+pandas>=2.0.0

@@ -1,0 +1,113 @@
+# Configuração de Logging do Tape Reader
+logging:
+  # Nível global de logging
+  # Opções: DEBUG, INFO, WARNING, ERROR, CRITICAL
+  root_level: INFO
+  
+  # Formato das mensagens de log
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  
+  # Configurações de arquivo
+  file:
+    enabled: true
+    # Padrão de nome do arquivo: tape_reader_YYYYMMDD.log
+    filename_pattern: 'tape_reader_{date}.log'
+    encoding: 'utf-8'
+    # Rotação de logs (opcional - para implementação futura)
+    max_bytes: 10485760  # 10MB
+    backup_count: 5
+  
+  # Configurações do console
+  console:
+    enabled: true
+    # Usar cores no console (requer colorlog)
+    colored: true
+    # Formato específico para console (mais simples)
+    format: '%(asctime)s - %(levelname)s - %(message)s'
+  
+  # Níveis específicos por módulo
+  # Permite controle fino de verbosidade
+  module_levels:
+    # Módulos do sistema
+    tapereader: INFO                     # Todo o sistema tape reader
+    tapereader.data.excel_provider: INFO # Provider Excel específico
+    tapereader.behaviors: DEBUG          # Detecção de comportamentos
+    tapereader.analysis: INFO            # Analisadores
+    tapereader.database: WARNING         # Banco de dados
+    tapereader.monitor: INFO             # Monitor de trades
+    
+    # Módulos src (compatibilidade)
+    src.core: INFO
+    src.data: INFO
+    src.analysis: INFO
+    src.ui: WARNING
+    
+    # Bibliotecas externas
+    asyncio: WARNING
+    xlwings: WARNING
+    urllib3: WARNING
+    
+  # Filtros e supressão de mensagens
+  suppress:
+    # Suprimir mensagens específicas que poluem o log
+    - "Verificando células para debug"
+    - "DEBUG: Verificando timestamps"
+    - "Nenhuma mudança detectada"
+    - "Cache hit para"
+    
+  # Configurações especiais para diferentes modos
+  modes:
+    # Modo produção (padrão)
+    production:
+      root_level: INFO
+      file:
+        enabled: true
+      console:
+        enabled: true
+        colored: false
+      module_levels:
+        tapereader: INFO
+        src: INFO
+      
+    # Modo desenvolvimento
+    development:
+      root_level: DEBUG
+      file:
+        enabled: true
+      console:
+        enabled: true
+        colored: true
+      module_levels:
+        tapereader: DEBUG
+        src: DEBUG
+        
+    # Modo debug completo
+    debug:
+      root_level: DEBUG
+      file:
+        enabled: true
+      console:
+        enabled: true
+        colored: true
+      # Todos os módulos em DEBUG
+      module_levels:
+        tapereader: DEBUG
+        src: DEBUG
+        asyncio: DEBUG
+        xlwings: DEBUG
+        
+    # Modo silencioso (apenas erros críticos)
+    quiet:
+      root_level: ERROR
+      file:
+        enabled: true
+      console:
+        enabled: true
+        colored: false
+        format: '%(message)s'  # Apenas a mensagem
+      module_levels:
+        # Silencia tudo exceto erros
+        tapereader: ERROR
+        src: ERROR
+        asyncio: ERROR
+        xlwings: ERROR
